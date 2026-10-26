@@ -52,7 +52,13 @@ function set_word(word: string){
     }
 
     pinyin_element.innerText = render_pinyin(definition.pinyin);
-    definition_element.innerText = definition.definitions[0]
+    definition_element.replaceChildren();
+
+    for(let d of definition.definitions){
+        let li = document.createElement("li");
+        li.innerText = d;
+        definition_element.appendChild(li);
+    }
 
     return true;
 }

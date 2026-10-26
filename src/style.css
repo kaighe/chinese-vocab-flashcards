@@ -49,8 +49,18 @@ body {
 }
 
 #definition {
+    max-width: 70%;
+    padding: 20px;
+    padding-left: 35px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+
     font-style: italic;
-    opacity: 0.8;
+    opacity: 0.6;
+    border: 1px solid black;
+    border-radius: 7px;
 }
 
 #options {
