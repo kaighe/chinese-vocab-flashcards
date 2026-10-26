@@ -99,6 +99,7 @@ function set_revealed(revealed: boolean){
 const vocab = await get_vocab();
 var deck: string[] = Object.values(vocab).flat();
 const dictionary = await get_dictionary();
+var revealed = false;
 
 function update_deck(){
     let checkboxes = document.querySelectorAll<HTMLInputElement>(".category>input");
@@ -111,6 +112,21 @@ function update_deck(){
     }
 
     console.log(deck);
+}
+
+function next(){
+    if(options_element.classList.contains("open")){
+        options_element.classList.remove("open");
+    }else{
+        if(revealed){
+            set_word(deck[Math.floor(Math.random() * deck.length)]);
+            set_revealed(false);
+            revealed = false;
+        }else{
+            set_revealed(true);
+            revealed = true;
+        }
+    }
 }
 
 for(let category of Object.keys(vocab)){
@@ -131,21 +147,10 @@ for(let category of Object.keys(vocab)){
     element.appendChild(label);
     options_element.appendChild(element);
 }
-update_deck();
-
-var revealed = false;
-container_element.addEventListener("click", () => {
-    if(options_element.classList.contains("open")){
-        options_element.classList.remove("open");
-    }else{
-        if(revealed){
-            set_word(deck[Math.floor(Math.random() * deck.length)]);
-            set_revealed(false);
-            revealed = false;
-        }else{
-            set_revealed(true);
-            revealed = true;
-        }
+container_element.addEventListener("click", next);
+window.addEventListener("keypress", (e) => {
+    if(e.key == " "){
+        next();
     }
 })
 
@@ -153,5 +158,6 @@ options_element.addEventListener("click", () => {
     options_element.classList.add("open");
 })
 
+update_deck();
 set_word(deck[0]);
 set_revealed(revealed);
