@@ -52,3 +52,60 @@ body {
     font-style: italic;
     opacity: 0.8;
 }
+
+#options {
+    position: fixed;
+    top: 10px;
+    left: 10px;
+    width: 40px;
+    height: 40px;
+    
+    border: 1px solid black;
+    border-radius: 100px;
+    overflow: hidden;
+
+    transition: all 0.2s;
+
+    * {
+        opacity: 0;
+        pointer-events: none;
+        transition: opacity 0.2s;
+    }
+
+    img {
+        position: absolute;
+        top: 8px;
+        left: 8px;
+
+        opacity: 1;
+        user-select: none;
+        transition: left 0.2s;
+    }
+}
+
+#options.open {
+    width: fit-content;
+    height: fit-content;
+    padding: 15px;
+    padding-right: 20px;
+    
+    border-radius: 7px;
+
+    * {
+        opacity: 1;
+        pointer-events: initial;
+    }
+
+    img {
+        left: -30px;
+    }
+}
+
+.category {
+    margin-bottom: 3px;
+    font-size: 15pt;
+
+    input {
+        margin-right: 10px;
+    }
+}

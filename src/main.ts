@@ -1,10 +1,12 @@
 import { get_svg } from "./graphics";
 
+const container_element = document.querySelector("#container") as HTMLDivElement;
 const character_elements = document.querySelectorAll<HTMLDivElement>(".character");
 const question_element = document.querySelector("#question") as HTMLDivElement;
 const answer_element = document.querySelector("#answer") as HTMLDivElement;
 const pinyin_element = document.querySelector("#pinyin") as HTMLDivElement;
 const definition_element = document.querySelector("#definition") as HTMLDivElement;
+const options_element = document.querySelector("#options") as HTMLDivElement;
 
 const vowels = {
     "a": ["ā", "á", "à", "ă", "a"],
@@ -23,9 +25,19 @@ async function get_dictionary(){
 async function get_vocab(){
     const r = await fetch("/vocab.txt");
     const text = await r.text();
-    let words = text.split("\n");
-    words = words.map(x => x.trim()).filter(x => x !== "" && !x.startsWith("#"));
-    return words;
+    let lines = text.split("\n");
+    let vocab: Record<string, string[]> = {};
+    let current_category = "main";
+    for(let line of lines){
+        line = line.trim();
+        if(line.startsWith("#")){
+            current_category = line.substring(1, line.length).trim();
+            vocab[current_category] = [];
+        }else if(line != ""){
+            vocab[current_category].push(line);
+        }
+    }
+    return vocab;
 }
 
 function set_word(word: string){
@@ -85,25 +97,61 @@ function set_revealed(revealed: boolean){
 }
 
 const vocab = await get_vocab();
+var deck: string[] = Object.values(vocab).flat();
 const dictionary = await get_dictionary();
 
+function update_deck(){
+    let checkboxes = document.querySelectorAll<HTMLInputElement>(".category>input");
+    
+    deck = [];
+    for(let checkbox of checkboxes){
+        if(checkbox.checked){
+            deck = deck.concat(vocab[checkbox.id]);
+        }
+    }
+
+    console.log(deck);
+}
+
+for(let category of Object.keys(vocab)){
+    let element = document.createElement("div");
+    let checkbox = document.createElement("input");
+    let label = document.createElement("label");
+
+    checkbox.addEventListener("change", update_deck);
+
+    element.classList.add("category");
+    checkbox.type = "checkbox";
+    checkbox.name = category;
+    checkbox.id = category;
+    checkbox.checked = true;
+    label.htmlFor = category;
+    label.innerText = category;
+    element.appendChild(checkbox);
+    element.appendChild(label);
+    options_element.appendChild(element);
+}
+update_deck();
+
 var revealed = false;
-window.addEventListener("click", () => {
-    if(revealed){
-        set_word(vocab[Math.floor(Math.random() * vocab.length)]);
-        set_revealed(false);
-        revealed = false;
+container_element.addEventListener("click", () => {
+    if(options_element.classList.contains("open")){
+        options_element.classList.remove("open");
     }else{
-        set_revealed(true);
-        revealed = true;
+        if(revealed){
+            set_word(deck[Math.floor(Math.random() * deck.length)]);
+            set_revealed(false);
+            revealed = false;
+        }else{
+            set_revealed(true);
+            revealed = true;
+        }
     }
 })
 
-set_word(vocab[0]);
+options_element.addEventListener("click", () => {
+    options_element.classList.add("open");
+})
+
+set_word(deck[0]);
 set_revealed(revealed);
-
-for(let word of vocab){
-    set_word(word);
-}
-
-console.log(vocab)
