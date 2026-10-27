@@ -21,6 +21,7 @@ const vowels = {
 
 var confidences: Record<string, number> = {}
 var current_word = "";
+var history: string[] = [];
 
 async function get_dictionary(){
     const r = await fetch("/dictionary.json");
@@ -171,8 +172,6 @@ function next(){
                 let weights = deck.map(x => word_weight(x));
                 let total_weight = weights.reduce((sum, weight) => sum + weight, 0);
 
-                console.log(deck.map((x, i) => [x, weights[i]]))
-
                 let word = deck[0];
                 let random_target = Math.random() * total_weight;
                 for(let i = 0; i < weights.length; i++){
@@ -183,9 +182,14 @@ function next(){
                     }
                 }
 
+                let last_word = current_word;
                 if(set_word(word)){
                     last_seen[word] = time;
                     time += 1;
+
+                    if(last_word != "") history.push(last_word);
+                    if(history.length > 5) history = history.slice(history.length - 5);
+                    
                     break;
                 };
             }
@@ -217,9 +221,13 @@ for(let category of Object.keys(vocab)){
     categories_element.appendChild(element);
 }
 container_element.addEventListener("click", next);
-window.addEventListener("keypress", (e) => {
-    if(e.key == " "){
+window.addEventListener("keydown", (e) => {
+    if(e.code == "Space"){
         next();
+    }else if(e.code == "Backspace"){
+        let last = history.pop();
+        if(last) set_word(last);
+        set_revealed(true);
     }
 })
 
@@ -239,5 +247,6 @@ for(let word of deck){
     set_word(word);
 }
 
+history = [];
 set_word(deck[0]);
 set_revealed(revealed);
