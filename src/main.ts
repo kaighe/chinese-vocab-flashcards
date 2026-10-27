@@ -19,6 +19,8 @@ const vowels = {
     "v": ["ǖ", "ǘ", "ǚ", "ǜ", "ü"],
 }
 
+const history_length = 20;
+
 var confidences: Record<string, number> = {}
 var current_word = "";
 var history: string[] = [];
@@ -188,8 +190,8 @@ function next(){
                     time += 1;
 
                     if(last_word != "") history.push(last_word);
-                    if(history.length > 5) history = history.slice(history.length - 5);
-                    
+                    if(history.length > history_length) history = history.slice(history.length - history_length);
+
                     break;
                 };
             }
