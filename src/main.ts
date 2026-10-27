@@ -70,8 +70,8 @@ function render_pinyin(pinyin: string){
         let vowel: string | undefined = undefined;
         let tone = Number(syl[syl.length - 1]);
         if(syl.includes("a")) vowel = "a";
-        if(syl.includes("e")) vowel = "e";
-        if(syl.includes("ou")) vowel = "o";
+        else if(syl.includes("e")) vowel = "e";
+        else if(syl.includes("ou")) vowel = "o";
         else{
             for(let i = syl.length-1; i--; i >= 0){
                 if(Object.hasOwn(vowels, syl[i])){
