@@ -7,6 +7,7 @@ const answer_element = document.querySelector("#answer") as HTMLDivElement;
 const pinyin_element = document.querySelector("#pinyin") as HTMLDivElement;
 const definition_element = document.querySelector("#definition") as HTMLDivElement;
 const options_element = document.querySelector("#options") as HTMLDivElement;
+const categories_element = document.querySelector("#categories-container") as HTMLDivElement;
 const confidence_element = document.querySelector("#confidence") as HTMLFormElement;
 
 const vowels = {
@@ -213,7 +214,7 @@ for(let category of Object.keys(vocab)){
     label.innerText = category;
     element.appendChild(checkbox);
     element.appendChild(label);
-    options_element.appendChild(element);
+    categories_element.appendChild(element);
 }
 container_element.addEventListener("click", next);
 window.addEventListener("keypress", (e) => {
