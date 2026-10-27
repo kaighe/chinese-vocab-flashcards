@@ -42,10 +42,22 @@ async function get_vocab(){
 
 function set_word(word: string){
     const svg = get_svg(word);
-    if(svg == undefined) return false;
+    if(svg == undefined){
+        console.log("could not find character in word:", word);
+        return false;
+    }
     
-    const definition = dictionary[word];
-    if(definition == undefined) return false;
+    let definition = dictionary[word];
+    if(definition == undefined){
+        definition = {
+            pinyin: Array.from(word).map(x => dictionary[x].pinyin).filter(x => x !== undefined).join(" "),
+            definitions: ["no definition found"]
+        }
+        if(definition.pinyin == ""){
+            console.log("could not find pinyin for word:", word);
+            return false;
+        }
+    }
 
     for(let element of character_elements){
         element.replaceChildren(svg.cloneNode(true));
@@ -80,8 +92,10 @@ function render_pinyin(pinyin: string){
                 }
             }
         }
-        
-        if(vowel !== undefined && !Number.isNaN(tone)){
+
+        if(tone == 5){
+            rendered.push(syl.replace(tone.toString(), ""));
+        }else if(vowel !== undefined && !Number.isNaN(tone)){
             rendered.push(syl.replace(vowel, (vowels as any)[vowel][tone-1]).replace(tone.toString(), ""));
         }else{
             console.log("failed to render pinyin sylible: " + pinyin);
@@ -116,8 +130,6 @@ function update_deck(){
             deck = deck.concat(vocab[checkbox.id]);
         }
     }
-
-    console.log(deck);
 }
 
 function next(){
@@ -125,7 +137,10 @@ function next(){
         options_element.classList.remove("open");
     }else{
         if(revealed){
-            set_word(deck[Math.floor(Math.random() * deck.length)]);
+            for(let i = 0; i < 10; i++){
+                let word = deck[Math.floor(Math.random() * deck.length)];
+                if(set_word(word)) break;
+            }
             set_revealed(false);
             revealed = false;
         }else{
@@ -165,5 +180,10 @@ options_element.addEventListener("click", () => {
 })
 
 update_deck();
+
+for(let word of deck){
+    set_word(word);
+}
+
 set_word(deck[0]);
 set_revealed(revealed);
