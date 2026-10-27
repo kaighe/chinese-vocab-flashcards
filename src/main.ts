@@ -7,15 +7,19 @@ const answer_element = document.querySelector("#answer") as HTMLDivElement;
 const pinyin_element = document.querySelector("#pinyin") as HTMLDivElement;
 const definition_element = document.querySelector("#definition") as HTMLDivElement;
 const options_element = document.querySelector("#options") as HTMLDivElement;
+const confidence_element = document.querySelector("#confidence") as HTMLFormElement;
 
 const vowels = {
-    "a": ["ā", "á", "à", "ă", "a"],
-    "e": ["ē", "é", "ĕ", "è", "e"],
-    "i": ["ī", "í", "ĭ", "ì", "i"],
-    "o": ["ō", "ó", "ŏ", "ò", "o"],
-    "u": ["ū", "ú", "ŭ", "ù", "u"],
+    "a": ["ā", "á", "ǎ", "à", "a"],
+    "e": ["ē", "é", "ě", "è", "e"],
+    "i": ["ī", "í", "ǐ", "ì", "i"],
+    "o": ["ō", "ó", "ǒ", "ò", "o"],
+    "u": ["ū", "ú", "ǔ", "ù", "u"],
     "v": ["ǖ", "ǘ", "ǚ", "ǜ", "ü"],
 }
+
+var confidences: Record<string, number> = {}
+var current_word = "";
 
 async function get_dictionary(){
     const r = await fetch("/dictionary.json");
@@ -72,6 +76,7 @@ function set_word(word: string){
         definition_element.appendChild(li);
     }
 
+    current_word = word;
     return true;
 }
 
@@ -110,7 +115,15 @@ function set_revealed(revealed: boolean){
     if(revealed){
         question_element.classList.add("hidden");
         answer_element.classList.remove("hidden");
+
+        confidence_element.classList.add("open");
+        if(Object.hasOwn(confidences, current_word)){
+            (confidence_element.elements.namedItem("rating") as RadioNodeList).value = confidences[current_word].toString();
+        }else{
+            (confidence_element.elements.namedItem("rating") as RadioNodeList).value = "0";
+        }
     }else{
+        confidence_element.classList.remove("open");
         question_element.classList.remove("hidden");
         answer_element.classList.add("hidden");
     }
@@ -177,6 +190,12 @@ window.addEventListener("keypress", (e) => {
 
 options_element.addEventListener("click", () => {
     options_element.classList.add("open");
+})
+
+confidence_element.addEventListener("change", () => {
+    const data = new FormData(confidence_element);
+    const rating = Number(data.get("rating"));
+    confidences[current_word] = rating;
 })
 
 update_deck();
