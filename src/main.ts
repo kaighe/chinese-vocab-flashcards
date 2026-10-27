@@ -133,16 +133,32 @@ const vocab = await get_vocab();
 var deck: string[] = Object.values(vocab).flat();
 const dictionary = await get_dictionary();
 var revealed = false;
+var time = 0;
+var last_seen: Record<string, number> = {};
 
 function update_deck(){
     let checkboxes = document.querySelectorAll<HTMLInputElement>(".category>input");
     
     deck = [];
+    time = 0;
+    last_seen = {};
     for(let checkbox of checkboxes){
         if(checkbox.checked){
             deck = deck.concat(vocab[checkbox.id]);
         }
     }
+}
+
+function word_weight(word: string): number {
+    const P = 1.5;
+    const N = deck.length
+    const E = 0.05;
+    const S = 2;
+
+    const c = Object.hasOwn(confidences, word) ? confidences[word] : 0;
+    const t = time - (Object.hasOwn(last_seen, word) ? last_seen[word] : 0);
+    const M = 2**(-c/0.7);
+    return M * (S*t/N + E)**P;
 }
 
 function next(){
@@ -151,8 +167,26 @@ function next(){
     }else{
         if(revealed){
             for(let i = 0; i < 10; i++){
-                let word = deck[Math.floor(Math.random() * deck.length)];
-                if(set_word(word)) break;
+                let weights = deck.map(x => word_weight(x));
+                let total_weight = weights.reduce((sum, weight) => sum + weight, 0);
+
+                console.log(deck.map((x, i) => [x, weights[i]]))
+
+                let word = deck[0];
+                let random_target = Math.random() * total_weight;
+                for(let i = 0; i < weights.length; i++){
+                    random_target -= weights[i];
+                    if(random_target <= 0){
+                        word = deck[i];
+                        break;
+                    }
+                }
+
+                if(set_word(word)){
+                    last_seen[word] = time;
+                    time += 1;
+                    break;
+                };
             }
             set_revealed(false);
             revealed = false;
