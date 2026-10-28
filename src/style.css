@@ -63,16 +63,25 @@ body {
     border-radius: 7px;
 }
 
-#options {
+#options-container {
     position: fixed;
     top: 10px;
     left: 10px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+#options {
+    position: relative;
     width: 40px;
     height: 40px;
     
     border: 1px solid black;
     border-radius: 100px;
     overflow: hidden;
+    cursor: pointer;
 
     transition: all 0.2s;
 
@@ -109,6 +118,30 @@ body {
     img {
         left: -30px;
     }
+}
+
+#back {
+    position: relative;
+    width: 40px;
+    height: 40px;
+    
+    border: 1px solid black;
+    border-radius: 100px;
+    cursor: pointer;
+
+    transition: background-color 0.05s;
+
+    img {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        user-select: none;
+    }
+}
+
+#back:active {
+    background-color: rgb(211, 211, 211);
 }
 
 .category {

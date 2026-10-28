@@ -8,6 +8,7 @@ const pinyin_element = document.querySelector("#pinyin") as HTMLDivElement;
 const definition_element = document.querySelector("#definition") as HTMLDivElement;
 const options_element = document.querySelector("#options") as HTMLDivElement;
 const categories_element = document.querySelector("#categories-container") as HTMLDivElement;
+const back_element = document.querySelector("#back") as HTMLDivElement;
 const confidence_element = document.querySelector("#confidence") as HTMLFormElement;
 
 const vowels = {
@@ -24,6 +25,7 @@ const history_length = 20;
 var confidences: Record<string, number> = {}
 var current_word = "";
 var history: string[] = [];
+var forwards_history: string[] = [];
 
 async function get_dictionary(){
     const r = await fetch("/dictionary.json");
@@ -171,16 +173,22 @@ function next(){
     }else{
         if(revealed){
             for(let i = 0; i < 10; i++){
-                let weights = deck.map(x => word_weight(x));
-                let total_weight = weights.reduce((sum, weight) => sum + weight, 0);
-
                 let word = deck[0];
-                let random_target = Math.random() * total_weight;
-                for(let i = 0; i < weights.length; i++){
-                    random_target -= weights[i];
-                    if(random_target <= 0){
-                        word = deck[i];
-                        break;
+                let forward = forwards_history.pop()
+
+                if(forward){
+                    word = forward;
+                }else{
+                    let weights = deck.map(x => word_weight(x));
+                    let total_weight = weights.reduce((sum, weight) => sum + weight, 0);
+
+                    let random_target = Math.random() * total_weight;
+                    for(let i = 0; i < weights.length; i++){
+                        random_target -= weights[i];
+                        if(random_target <= 0){
+                            word = deck[i];
+                            break;
+                        }
                     }
                 }
 
@@ -201,6 +209,17 @@ function next(){
             set_revealed(true);
             revealed = true;
         }
+    }
+}
+
+function prev(){
+    let last = history.pop();
+    if(last){
+        if(current_word != "") forwards_history.push(current_word);
+        if(forwards_history.length > history_length) forwards_history = forwards_history.slice(forwards_history.length - history_length);
+
+        set_word(last);
+        set_revealed(true);
     }
 }
 
@@ -227,15 +246,15 @@ window.addEventListener("keydown", (e) => {
     if(e.code == "Space"){
         next();
     }else if(e.code == "Backspace"){
-        let last = history.pop();
-        if(last) set_word(last);
-        set_revealed(true);
+        prev();
     }
 })
 
 options_element.addEventListener("click", () => {
     options_element.classList.add("open");
 })
+
+back_element.addEventListener("click", prev);
 
 confidence_element.addEventListener("change", () => {
     const data = new FormData(confidence_element);
