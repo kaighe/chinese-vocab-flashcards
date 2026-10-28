@@ -148,6 +148,8 @@ function update_deck(){
     deck = [];
     time = 0;
     last_seen = {};
+    history = [];
+    forwards_history = [];
     for(let checkbox of checkboxes){
         if(checkbox.checked){
             deck = deck.concat(vocab[checkbox.id]);
@@ -269,5 +271,6 @@ for(let word of deck){
 }
 
 history = [];
+forwards_history = [];
 set_word(deck[0]);
 set_revealed(revealed);
