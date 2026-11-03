@@ -37,7 +37,7 @@ async function get_vocab(){
     const text = await r.text();
     let lines = text.split("\n");
     let vocab: Record<string, string[]> = {};
-    let current_category = "main";
+    let current_category = "Miscellaneous";
     for(let line of lines){
         line = line.trim();
         if(line.startsWith("#")){
@@ -59,6 +59,7 @@ function set_word(word: string){
     
     let definition = dictionary[word];
     if(definition == undefined){
+        console.log("could not find definition for word:", word);
         definition = {
             pinyin: Array.from(word).map(x => dictionary[x].pinyin).filter(x => x !== undefined).join(" "),
             definitions: ["no definition found"]
