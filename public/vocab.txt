@@ -112,7 +112,8 @@
 # L3 Dialogue 2
 现在
 刻
-事儿
+// changed from 事(儿) (northern dialect)
+事
 今天
 很
 忙
@@ -192,7 +193,8 @@
 哪儿
 学校
 喝
-点儿
+// changed from 点(儿) (northern dialect)
+点
 茶
 咖啡
 吧
@@ -207,11 +209,13 @@
 高小音
 
 # L5 Narrative
+// changed from 玩(儿) (northern dialect)
 玩
 了
 图书馆
 一起
-聊天儿
+// changed from 聊天(儿) (northern dialect)
+聊天
 聊
 天
 才
@@ -243,6 +247,7 @@
 考
 试
 以后
+// changed from 空(儿) (northern dialect)
 空
 要是
 方便

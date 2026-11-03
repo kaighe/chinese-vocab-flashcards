@@ -43,7 +43,7 @@ async function get_vocab(){
         if(line.startsWith("#")){
             current_category = line.substring(1, line.length).trim();
             vocab[current_category] = [];
-        }else if(line != ""){
+        }else if(line != "" && !line.startsWith("//")){
             vocab[current_category].push(line);
         }
     }

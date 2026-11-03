@@ -151,6 +151,8 @@ body {
     font-size: 15pt;
 
     input {
+        width: 15px;
+        height: 15px;
         margin-right: 10px;
     }
 }
